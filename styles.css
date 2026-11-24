@@ -191,7 +191,7 @@ img { max-width: 100%; height: auto; }
   mix-blend-mode: multiply;
 }
 
-.status { display: flex; align-items: center; justify-content: space-between; font-size: 0.8em; font-weight: 600; padding: 0.15em 0.9em 0; }
+.status { display: flex; align-items: center; justify-content: space-between; font-size: 0.8em; font-weight: 600; padding: 0.35em 1.6em 0; }
 .status .island { width: 6.2em; height: 1.6em; border-radius: 1em; background: #1d231e; }
 .status .bars { display: flex; gap: 2px; align-items: flex-end; }
 .status .bars i { width: 3px; border-radius: 1px; background: var(--g-ink); }
@@ -336,6 +336,15 @@ img { max-width: 100%; height: auto; }
 .float-tile.t2 { top: 50%; right: calc(50% - 13.2em); transform: rotate(8deg); }
 .float-tile.t3 { bottom: 26%; left: calc(50% - 13em); transform: rotate(6deg); }
 .hero { overflow-x: clip; }
+/* The loose pieces need room on both sides of the phone; below this
+   width they would hang off the screen, so leave them out. */
+@media (max-width: 999px) {
+  .float-tile { display: none; }
+}
+/* One column: a smaller phone, closer to the text above it. */
+@media (max-width: 820px) {
+  .hero-art { font-size: 14px; padding: 0; margin-top: 8px; }
+}
 
 /* Sections */
 section { padding: 56px 0; }
@@ -525,8 +534,7 @@ section p.section-lead {
 }
 
 @media (max-width: 400px) {
-  .hero-art { font-size: 14.5px; }
-  .float-tile { font-size: 13px; }
+  .hero-art { font-size: 13px; }
 }
 
 @media (max-width: 640px) {
