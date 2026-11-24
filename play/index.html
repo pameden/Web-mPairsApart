@@ -265,10 +265,33 @@
     .play-cta p { color: var(--muted); margin: 0 0 12px; }
     .play-cta .app-store-badge { display: inline-block; }
 
-    @media (max-width: 400px) {
-      .game { padding: 14px 10px 16px; border-radius: 26px; }
-      .g-info { padding: 7px 10px; }
+    .g-pack { display: none; }
+
+    /* Phones: the game comes first and fills the screen below the header.
+       The header scrolls away, the intro moves below the game, the pack
+       name joins the stage line, and the spacing tightens. The script
+       then sizes the tiles so the whole game fits the screen's height. */
+    @media (max-width: 640px) {
+      .site-header { position: static; }
+      .game-wrap { padding: 8px 0 32px; }
+      .game-wrap > .wrap { display: flex; flex-direction: column; padding: 0 8px; }
+      .game-intro { order: 2; margin: 28px auto 0; padding: 0 8px; }
+      .game-intro h1 { font-size: 26px; }
+      .game-intro p { font-size: 15px; }
+      .play-help { order: 3; margin-top: 24px; padding: 0 8px; }
+      .game { padding: 10px 10px 8px; border-radius: 24px; }
+      .g-title { display: none; }
+      .g-pack { display: inline; }
+      .g-info { padding: 6px 10px; margin-bottom: 8px; border-radius: 12px; }
+      .g-eyebrow { font-size: 11px; }
       .g-challenge { font-size: 14px; }
+      .g-moves strong { font-size: 14px; }
+      .g-play { gap: 8px; }
+      .g-tray { gap: 8px; padding: 6px; }
+      .g-footer { margin-top: 8px; }
+      .g-status { padding: 6px 12px; font-size: 13px; }
+      .g-tool { width: 40px; height: 40px; }
+      .g-message { min-height: 1.3em; margin: 6px 4px 0; font-size: 13px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .slot.incorrect, .g-done.show { animation: none; }
@@ -298,7 +321,7 @@
         <div class="g-title">The Garden</div>
         <div class="g-info">
           <div>
-            <div class="g-eyebrow">Medium · Stage 6 of 14</div>
+            <div class="g-eyebrow"><span class="g-pack">The Garden · </span>Medium · Stage 6 of 14</div>
             <div class="g-challenge">Read every anchor carefully</div>
           </div>
           <div class="g-moves">
@@ -450,11 +473,19 @@
     let geo = null;
     function layout() {
       const gameW = game.clientWidth;
-      const pad = gameW < 400 ? 10 : 16;
+      const pad = parseFloat(getComputedStyle(game).paddingLeft) || 16;
       // Board width = game inner width − tray − gap. Tray ≈ 0.86·tile + 18.
       const inner = gameW - pad * 2 - 10;
-      let tile = Math.floor((inner - 18 - 24 - 28) / 2.86);
-      tile = Math.max(46, Math.min(76, tile));
+      const tileByWidth = Math.floor((inner - 18 - 24 - 28) / 2.86);
+      // Also fit the whole game in the screen's height, below the site
+      // header, so small phones see the full board without scrolling.
+      // Everything but the board stays the same height whatever the tile.
+      const headerH = document.querySelector(".site-header").offsetHeight;
+      const overhead = game.offsetHeight - boardEl.parentElement.offsetHeight;
+      const room = window.innerHeight - headerH - 16 - overhead;
+      // Board = rows of tiles + row gaps + 14px top and bottom + 2px border.
+      const tileByHeight = Math.floor((room - 30 - (PUZZLE.rows - 1) * 10) / PUZZLE.rows);
+      const tile = Math.max(40, Math.min(76, tileByWidth, tileByHeight));
       game.style.setProperty("--tile", tile + "px");
       const boardW = inner - (tile * 0.86 + 18 + 2);
       const rowGap = 10;
@@ -743,6 +774,7 @@
     layout();
     render();
     new ResizeObserver(layout).observe(game);
+    window.addEventListener("resize", layout);
   })();
   </script>
 </body>
